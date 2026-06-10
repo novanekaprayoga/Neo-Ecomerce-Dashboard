@@ -5,20 +5,21 @@ import { DataTable } from '@/components/table/DataTable';
 import { Modal, Button, Input } from '@/components/ui';
 import { mockTopProducts } from '@/data/mockData';
 import { exportToCSV } from '@/lib/utils';
+import { TopProduct } from '@/types';
 
 const PRODUCTS_STORAGE_KEY = 'neo-products';
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState(() => {
+  const [products, setProducts] = useState<TopProduct[]>(() => {
     if (typeof window === 'undefined') {
-      return mockTopProducts;
+      return mockTopProducts as TopProduct[];
     }
 
     try {
       const saved = window.localStorage.getItem(PRODUCTS_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : mockTopProducts;
+      return saved ? (JSON.parse(saved) as TopProduct[]) : (mockTopProducts as TopProduct[]);
     } catch {
-      return mockTopProducts;
+      return mockTopProducts as TopProduct[];
     }
   });
   const [isExporting, setIsExporting] = useState(false);
@@ -47,7 +48,7 @@ export default function ProductsPage() {
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = (product: any) => {
+  const handleOpenEdit = (product: TopProduct) => {
     setEditingId(product.id);
     setForm({
       id: product.id,
@@ -71,13 +72,13 @@ export default function ProductsPage() {
       return;
     }
 
-    const nextProduct = {
+    const nextProduct: TopProduct = {
       id: form.id,
       name: form.name,
       category: form.category,
       sales: Number(form.sales || 0),
       revenue: Number(form.revenue || 0),
-      status: form.status,
+      status: form.status as TopProduct['status'],
     };
 
     setProducts((prev) => {

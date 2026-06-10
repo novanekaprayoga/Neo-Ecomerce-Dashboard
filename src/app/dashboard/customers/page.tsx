@@ -4,20 +4,21 @@ import { useEffect, useState } from 'react';
 import { DataTable } from '@/components/table/DataTable';
 import { Modal, Button, Input } from '@/components/ui';
 import { mockCustomers } from '@/data/mockData';
+import { Customer } from '@/types';
 
 const CUSTOMERS_STORAGE_KEY = 'neo-customers';
 
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState(() => {
+  const [customers, setCustomers] = useState<Customer[]>(() => {
     if (typeof window === 'undefined') {
-      return mockCustomers;
+      return mockCustomers as Customer[];
     }
 
     try {
       const saved = window.localStorage.getItem(CUSTOMERS_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : mockCustomers;
+      return saved ? (JSON.parse(saved) as Customer[]) : (mockCustomers as Customer[]);
     } catch {
-      return mockCustomers;
+      return mockCustomers as Customer[];
     }
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,7 +46,7 @@ export default function CustomersPage() {
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = (customer: any) => {
+  const handleOpenEdit = (customer: Customer) => {
     setEditingId(customer.id);
     setForm({
       id: customer.id,
@@ -69,13 +70,15 @@ export default function CustomersPage() {
       return;
     }
 
-    const nextCustomer = {
+    const existingCustomer = editingId ? customers.find((item) => item.id === editingId) : undefined;
+    const nextCustomer: Customer = {
       id: form.id,
       name: form.name,
       email: form.email,
       totalSpent: Number(form.totalSpent || 0),
       orders: Number(form.orders || 0),
-      status: form.status,
+      joined: existingCustomer?.joined ?? new Date().toISOString().split('T')[0],
+      status: form.status as Customer['status'],
     };
 
     setCustomers((prev) => {
@@ -104,7 +107,7 @@ export default function CustomersPage() {
       key: 'actions',
       label: 'Actions',
       sortable: false,
-      render: (customer: any) => (
+      render: (customer: Customer) => (
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" onClick={() => handleOpenEdit(customer)}>
             Edit

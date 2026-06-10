@@ -4,20 +4,21 @@ import { useEffect, useState } from 'react';
 import { DataTable } from '@/components/table/DataTable';
 import { Modal, Button, Input } from '@/components/ui';
 import { mockRecentOrders } from '@/data/mockData';
+import { Order } from '@/types';
 
 const ORDERS_STORAGE_KEY = 'neo-orders';
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState(() => {
+  const [orders, setOrders] = useState<Order[]>(() => {
     if (typeof window === 'undefined') {
-      return mockRecentOrders;
+      return mockRecentOrders as Order[];
     }
 
     try {
       const saved = window.localStorage.getItem(ORDERS_STORAGE_KEY);
-      return saved ? JSON.parse(saved) : mockRecentOrders;
+      return saved ? (JSON.parse(saved) as Order[]) : (mockRecentOrders as Order[]);
     } catch {
-      return mockRecentOrders;
+      return mockRecentOrders as Order[];
     }
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,7 +46,7 @@ export default function OrdersPage() {
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = (order: any) => {
+  const handleOpenEdit = (order: Order) => {
     setEditingId(order.id);
     setForm({
       id: order.id,
@@ -69,12 +70,12 @@ export default function OrdersPage() {
       return;
     }
 
-    const nextOrder = {
+    const nextOrder: Order = {
       id: form.id,
       customer: form.customer,
       amount: Number(form.amount),
       items: Number(form.items),
-      status: form.status,
+      status: form.status as Order['status'],
       date: form.date,
     };
 
