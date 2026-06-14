@@ -7,18 +7,14 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { register, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { register, isAuthenticated, isLoading: authLoading, logout, user } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.replace('/dashboard');
-    }
-  }, [authLoading, isAuthenticated, router]);
+  // Do not auto-redirect when already authenticated; show options instead.
 
   if (authLoading) {
     return (
@@ -27,6 +23,38 @@ export default function RegisterPage() {
           <Spinner size="lg" />
           <p className="text-gray-600 dark:text-gray-300">Checking authentication…</p>
         </div>
+      </div>
+    );
+  }
+
+  if (isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-light dark:bg-dark px-4">
+        <Card className="max-w-md w-full">
+          <CardBody>
+            <div className="space-y-6">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Already signed in</h1>
+                <p className="text-gray-500 dark:text-gray-400">
+                  You are currently signed in{user?.email ? ` as ${user.email}` : ''}. To create a new account,
+                  please logout first.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button variant="primary" onClick={() => router.replace('/dashboard')}>Go to Dashboard</Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    logout();
+                    router.replace('/register');
+                  }}
+                >
+                  Logout & Register
+                </Button>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
       </div>
     );
   }

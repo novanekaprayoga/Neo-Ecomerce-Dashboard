@@ -2,6 +2,8 @@
 
 A modern, production-ready e-commerce analytics dashboard built with Next.js (App Router), TypeScript, and Tailwind CSS.
 
+**Live Demo:** https://neo-ecomerce-dashboard.vercel.app/
+
 ## Features
 
 ✨ **Core Features**
@@ -135,6 +137,10 @@ npm start
 - Use the sidebar to navigate between sections: Dashboard, Orders, Products, Customers, Analytics, and Settings
 - Toggle dark mode using the sun/moon icon in the navbar
 - Access notifications and profile menu in the top-right corner
+
+### Recent Fixes
+- Fixed registration flow so authenticated users are not automatically redirected from the Sign Up page.
+- Added a new authenticated state screen in `src/app/register/page.tsx` with options to continue to the dashboard or logout before registering a new account.
 
 ### Filtering
 - Click "Show" in the Filters section to expand filter options
